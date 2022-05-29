@@ -14,7 +14,7 @@ CREATE TABLE address
     creation_date DATETIME           NOT NULL
 );
 
-CREATE TABLE user_c
+CREATE TABLE user
 (
     id            BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     name          VARCHAR(60)        NOT NULL,
@@ -30,15 +30,15 @@ CREATE TABLE customer
     id                  BIGINT NOT NULL,
     shipping_address_id BIGINT,
     billing_address_id  BIGINT,
-    CONSTRAINT FOREIGN KEY (id) REFERENCES user_c (id),
+    CONSTRAINT FOREIGN KEY (id) REFERENCES user (id),
     CONSTRAINT FOREIGN KEY (shipping_address_id) REFERENCES address (id),
     CONSTRAINT FOREIGN KEY (billing_address_id) REFERENCES address (id)
 );
 
-CREATE TABLE admin_a
+CREATE TABLE admin
 (
     id BIGINT NOT NULL,
-    CONSTRAINT FOREIGN KEY (id) REFERENCES user_c (id)
+    CONSTRAINT FOREIGN KEY (id) REFERENCES user (id)
 );
 
 CREATE TABLE credit_card_data
@@ -75,8 +75,8 @@ CREATE TABLE product
 );
 -- ROLLBACK DROP TABLE credit_card_data;
 -- ROLLBACK DROP TABLE customer;
--- ROLLBACK DROP TABLE admin_a;
--- ROLLBACK DROP TABLE user_c;
+-- ROLLBACK DROP TABLE admin;
+-- ROLLBACK DROP TABLE user;
 -- ROLLBACK DROP TABLE address;
 -- ROLLBACK DROP TABLE product;
 -- ROLLBACK DROP TABLE product_category;

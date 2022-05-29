@@ -8,7 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "admin_a")
+@Table(name = "admin")
 @DiscriminatorValue("1")
 @Getter
 @Setter
