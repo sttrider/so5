@@ -4,3 +4,8 @@ spring:
     url: jdbc:mysql://localhost:3306/so5?createDatabaseIfNotExist=true
     username: root
     password: so5
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8180/realms/so5/protocol/openid-connect/certs
