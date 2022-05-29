@@ -1,21 +1,11 @@
-server:
-  forward-headers-strategy: native
-  port: 8080
-  servlet:
-    context-path: "/"
-  shutdown: graceful
-
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/so5?createDatabaseIfNotExist=true
     username: root
     password: so5
-
-keycloak:
-  server:
-    contextPath: /auth
-    adminUser:
-      username: admin
-      password: admin
-    realmImportFile: so5-realm.json
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8180/realms/so5/protocol/openid-connect/certs
