@@ -7,16 +7,20 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "customer")
-@DiscriminatorValue("2")
 @Getter
 @Setter
-public class Customer extends User {
+public class Customer {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String email;
+
+    @ManyToOne
     @JoinColumn(name = "shipping_address_id")
     private Address shippingAddress;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "billing_address_id")
     private Address billingAddress;
 }

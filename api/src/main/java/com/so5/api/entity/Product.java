@@ -1,7 +1,6 @@
 package com.so5.api.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,10 +9,14 @@ import java.time.LocalDateTime;
 @Table(name = "product")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String sku;
     private String name;
     private String description;
@@ -23,7 +26,7 @@ public class Product {
     @Column(name = "shipment_delivery_times")
     private Integer shipmentDeliveryTimes;
     private boolean enabled;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "category_id")
     private ProductCategory category;
     @Column(name = "creation_date")
