@@ -9,3 +9,13 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: http://localhost:8180/realms/so5/protocol/openid-connect/certs
+
+aws:
+  server:
+    host: http://s3.localhost.localstack.cloud:4566
+    region: us-east-1
+  bucket: so5
+
+imagemagick:
+  path: /usr/local/Cellar/imagemagick/7.1.0-33/bin
+  resize: 300

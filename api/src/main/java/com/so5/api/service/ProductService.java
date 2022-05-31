@@ -1,7 +1,5 @@
 package com.so5.api.service;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.so5.api.entity.Customer;
 import com.so5.api.entity.Product;
 import com.so5.api.entity.ProductCategory;
@@ -17,13 +15,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.Set;
-
-import static com.so5.api.config.AwsConfig.BUCKET_NAME;
 
 @Slf4j
 @Service
@@ -32,8 +30,8 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CreditCardDataService creditCardDataService;
-
-    private final AmazonS3 amazonS3;
+    private final ImageResizeService imageResizeService;
+    private final S3Service s3Service;
 
     public Product create(ProductCreateVO productCreateVO) {
 
@@ -74,18 +72,22 @@ public class ProductService {
     }
 
     private String uploadImage(ProductCreateVO productCreateVO) {
+        if (productCreateVO.getImage() == null) {
+            return null;
+        }
         var base62Splitted = productCreateVO.getImage().split(",");
         var image = Base64.getDecoder().decode(base62Splitted[1]);
         InputStream fis = new ByteArrayInputStream(image);
 
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(image.length);
-        metadata.setContentType(StringUtils.substringBetween(base62Splitted[0], ":", ";"));
-        metadata.setCacheControl("public, max-age=31536000");
+        String extension = StringUtils.substringBetween(base62Splitted[0], "/", ";");
+        String contentType = StringUtils.substringBetween(base62Splitted[0], ":", ";");
 
-        amazonS3.putObject(BUCKET_NAME, productCreateVO.getSku(), fis, metadata);
-
-        return "http://localhost:4566/" + BUCKET_NAME + "/" + productCreateVO.getSku();
+        try {
+            ByteArrayOutputStream os = imageResizeService.resizeImage(fis, extension);
+            return s3Service.upload(os, productCreateVO.getSku(), contentType);
+        } catch (IOException e) {
+            log.error("Error resizing image.", e);
+            return null;
+        }
     }
-
 }
