@@ -9,20 +9,36 @@ function Create() {
     const navigate = useNavigate();
     const {register, handleSubmit} = useForm({
         defaultValues: {
-            enabled: true,
-            image: "image"
+            enabled: true
         }
     });
 
     const onSubmit = async (data) => {
-        const response = await axios.post('http://localhost:8080/product/', data, {
+        console.log(data);
+        const newData = {...data}
+        newData.image = await convertToBase64(data.image[0])
+        console.log(newData);
+        const response = await axios.post('http://localhost:8080/product/', newData, {
             headers: {
-                Authorization: 'bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGdFAzU0dfQUxTbzBMVkFiZlUzMmFJem1lczUybXQ5bFVFX2cwcjA1LWlzIn0.eyJleHAiOjE2NTM5MjIxMjAsImlhdCI6MTY1MzkyMDMyMCwianRpIjoiNGY3ODliN2ItNGU4Yy00M2NmLTkxMjYtMjFmNWU0MzkxY2VlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MTgwL3JlYWxtcy9zbzUiLCJzdWIiOiIxZDM1NmQwMy1jOWMzLTQ1YWYtYTAyNy0yODI4NjA1MWZiYmIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJzbzVfd2ViIiwic2Vzc2lvbl9zdGF0ZSI6ImFiOTljN2Q0LTkzNzYtNDEwMy1hNmZlLTkxOGRhNTkzNDc1MyIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiKiJdLCJyZXNvdXJjZV9hY2Nlc3MiOnsic281X3dlYiI6eyJyb2xlcyI6WyJhZG1pbiJdfX0sInNjb3BlIjoiZW1haWwgcHJvZmlsZSIsInNpZCI6ImFiOTljN2Q0LTkzNzYtNDEwMy1hNmZlLTkxOGRhNTkzNDc1MyIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IkFkbWluIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiYWRtaW5Ac281LmNvbSIsImdpdmVuX25hbWUiOiJBZG1pbiIsImVtYWlsIjoiYWRtaW5Ac281LmNvbSJ9.DjiMQPQmCClwBEz7i2cH9livRl2mGzy2hQgx_NJIN5VZ0-waObCdXKejwU948pn0N0XtQixlEpu5_1bDeAK56cHmhot2WaUnFUBnps53hid3FTcC-Kz4G8NKEU2o7kAScP4UvflaiNGSQdV7Ae0sNeUGj38nywR5WsyaIqZMrWmryJghIV_k77zWQXQQL_x9gQS-vFXePaoQo6nJ-UiwQl6ZzoXBkfTg8WYo4TsmxvzKBqwn-QDma-y21j8w_2L0WsOYhQLni05TeImNk3pwgUk1_EpjaDKXIW8KSjcDcaUQjj48_w__y_yDfvYQxTagP2CdZolZTfS0q_dglOPe_g'
+                Authorization: 'bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGdFAzU0dfQUxTbzBMVkFiZlUzMmFJem1lczUybXQ5bFVFX2cwcjA1LWlzIn0.eyJleHAiOjE2NTM5NDk2MDMsImlhdCI6MTY1Mzk0NzgwMywianRpIjoiMzcxYTljYWYtNWY1My00ZmUwLTk5ZmQtMjlmNzE2YjllZjdlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MTgwL3JlYWxtcy9zbzUiLCJzdWIiOiIxZDM1NmQwMy1jOWMzLTQ1YWYtYTAyNy0yODI4NjA1MWZiYmIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJzbzVfd2ViIiwic2Vzc2lvbl9zdGF0ZSI6Ijk4NzZhYzJhLTUyNjctNGY0NC1iY2FiLTBiNjQzZTA4MDRkOSIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiKiJdLCJyZXNvdXJjZV9hY2Nlc3MiOnsic281X3dlYiI6eyJyb2xlcyI6WyJhZG1pbiJdfX0sInNjb3BlIjoiZW1haWwgcHJvZmlsZSIsInNpZCI6Ijk4NzZhYzJhLTUyNjctNGY0NC1iY2FiLTBiNjQzZTA4MDRkOSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IkFkbWluIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiYWRtaW5Ac281LmNvbSIsImdpdmVuX25hbWUiOiJBZG1pbiIsImVtYWlsIjoiYWRtaW5Ac281LmNvbSJ9.M9R6vBvOcjheQxSLrxNFd41r9LeVAzFbX7AATiHTbFCF_HncjkPGgZgwfbFMwDoEF-h--ytG0HLj5LJsVJYd4dQy43FEi_-3lbNCHOsNp93l65ltl3MQ-4trXMXEIfQg13qcyLeSFFyV04pKEHvzkgSSwusMPRHt2syhfPZwzTXg3x4tBQaAglFXQOMR5G01BckYo98IRSdhhbPUUDWMOZdPc5PHNfIQQ1TroguWRa9AZKncfRVexxufnoTa0Fg3L8plNMV2Eeki4pF-h4c-bB8VJVJYp169zX8i0dbdW6eIINHsu2_CJGXTGtgaS71l7EFpjplQcw3WTpMDQ4TNMA'
             }
         })
         navigate("/admin", {replace: true});
         console.log(response.data);
     }
+
+    const convertToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+            fileReader.onload = () => {
+                resolve(fileReader.result);
+            };
+            fileReader.onerror = (error) => {
+                reject(error);
+            };
+        });
+    };
 
     return (
         <>
@@ -41,7 +57,7 @@ function Create() {
                 <input {...register("shipmentDeliveryTimes")} placeholder="Shipment Delivery Times"/>
                 <input type="checkbox" {...register("enabled")} placeholder="Enabled"/>
                 <CategoryInput {...register("categoryId")} />
-                <input type="hidden" {...register("image")} placeholder="Description"/>
+                <input type="file" {...register("image")} placeholder="Description" />
                 <input type="submit"/>
             </form>
         </>

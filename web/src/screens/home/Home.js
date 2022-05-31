@@ -4,6 +4,7 @@ import axios from "axios";
 import CategoryInput from "../../components/category/CategoryInput";
 import Cart from "../../components/cart/Cart";
 import Login from "../../components/login/Login";
+import ProductList from "../../components/product/ProductList";
 
 const CartContext = createContext();
 const UserContext = createContext();
@@ -43,21 +44,12 @@ const Home = React.memo(() => {
         <CartContext.Provider value={cart}>
             <UserContext.Provider value={user}>
                 <main>
-                    <h2>Products list!</h2>
+                    <h2>Products list</h2>
                 </main>
                 {loading && <div>A moment please...</div>}
                 <Login setUser={setUser}/>
                 <CategoryInput onChange={handleOnChange}/>
-                <ul>
-                    {products && products.map((product) => (
-                        <li key={product.sku}>
-                            <h3>{product.name}</h3>
-                            <div>
-                                <button onClick={() => addCart(product)}>Add to cart</button>
-                            </div>
-                        </li>
-                    ))}
-                </ul>
+                <ProductList products={products} addCart={addCart}/>
                 <Cart clearCart={clearCart}/>
             </UserContext.Provider>
         </CartContext.Provider>

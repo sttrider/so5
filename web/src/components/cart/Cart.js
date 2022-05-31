@@ -2,6 +2,7 @@ import * as React from "react";
 import {useContext} from "react";
 import {CartContext, UserContext} from "../../screens/home/Home";
 import axios from "axios";
+import ProductList from "../product/ProductList";
 
 export default function Cart({clearCart}) {
 
@@ -32,13 +33,7 @@ export default function Cart({clearCart}) {
                     <div>
                         {user && <button onClick={handleClick}>1-Click buy</button>}
                     </div>
-                    <ul>
-                        {cart.map(({sku, name}) => (
-                            <li key={sku}>
-                                <h3>{name}</h3>
-                            </li>
-                        ))}
-                    </ul>
+                    <ProductList products={cart}/>
                 </>
             )}
         </>);
