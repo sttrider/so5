@@ -13,4 +13,5 @@ public class ProductCreateVO {
     private Integer shipmentDeliveryTimes;
     private boolean enabled;
     private Long categoryId;
+    private String image;
 }
