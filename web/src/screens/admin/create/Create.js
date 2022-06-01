@@ -3,6 +3,8 @@ import {Link, useNavigate} from "react-router-dom";
 import {useForm} from "react-hook-form";
 import axios from "axios";
 import CategoryInput from "../../../components/category/CategoryInput";
+import login from "../../../service/loginService";
+import {Button, Col, Container, Form, FormCheck, FormControl, FormGroup, Row} from "react-bootstrap";
 
 function Create() {
 
@@ -14,17 +16,23 @@ function Create() {
     });
 
     const onSubmit = async (data) => {
-        console.log(data);
-        const newData = {...data}
-        newData.image = await convertToBase64(data.image[0])
-        console.log(newData);
-        const response = await axios.post('http://localhost:8080/product/', newData, {
-            headers: {
-                Authorization: 'bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJGdFAzU0dfQUxTbzBMVkFiZlUzMmFJem1lczUybXQ5bFVFX2cwcjA1LWlzIn0.eyJleHAiOjE2NTM5NDk2MDMsImlhdCI6MTY1Mzk0NzgwMywianRpIjoiMzcxYTljYWYtNWY1My00ZmUwLTk5ZmQtMjlmNzE2YjllZjdlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MTgwL3JlYWxtcy9zbzUiLCJzdWIiOiIxZDM1NmQwMy1jOWMzLTQ1YWYtYTAyNy0yODI4NjA1MWZiYmIiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJzbzVfd2ViIiwic2Vzc2lvbl9zdGF0ZSI6Ijk4NzZhYzJhLTUyNjctNGY0NC1iY2FiLTBiNjQzZTA4MDRkOSIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiKiJdLCJyZXNvdXJjZV9hY2Nlc3MiOnsic281X3dlYiI6eyJyb2xlcyI6WyJhZG1pbiJdfX0sInNjb3BlIjoiZW1haWwgcHJvZmlsZSIsInNpZCI6Ijk4NzZhYzJhLTUyNjctNGY0NC1iY2FiLTBiNjQzZTA4MDRkOSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IkFkbWluIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiYWRtaW5Ac281LmNvbSIsImdpdmVuX25hbWUiOiJBZG1pbiIsImVtYWlsIjoiYWRtaW5Ac281LmNvbSJ9.M9R6vBvOcjheQxSLrxNFd41r9LeVAzFbX7AATiHTbFCF_HncjkPGgZgwfbFMwDoEF-h--ytG0HLj5LJsVJYd4dQy43FEi_-3lbNCHOsNp93l65ltl3MQ-4trXMXEIfQg13qcyLeSFFyV04pKEHvzkgSSwusMPRHt2syhfPZwzTXg3x4tBQaAglFXQOMR5G01BckYo98IRSdhhbPUUDWMOZdPc5PHNfIQQ1TroguWRa9AZKncfRVexxufnoTa0Fg3L8plNMV2Eeki4pF-h4c-bB8VJVJYp169zX8i0dbdW6eIINHsu2_CJGXTGtgaS71l7EFpjplQcw3WTpMDQ4TNMA'
-            }
-        })
-        navigate("/admin", {replace: true});
-        console.log(response.data);
+        const newData = {...data};
+        if (data.image.length === 1) {
+            newData.image = await convertToBase64(data.image[0]);
+        } else {
+            newData.image = null;
+        }
+        const user = await login({username: "admin@so5.com", password: "admin"});
+        try {
+            await axios.post('http://localhost:8080/product/', newData, {
+                headers: {
+                    Authorization: `bearer ${user.access_token}`
+                }
+            })
+            navigate("/admin", {replace: true});
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     const convertToBase64 = (file) => {
@@ -42,24 +50,52 @@ function Create() {
 
     return (
         <>
-            <main>
-                <h2>Creating</h2>
-            </main>
-            <nav>
-                <Link to="/admin">Back</Link>
-            </nav>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <input {...register("sku")} placeholder="Sku"/>
-                <input {...register("name")} placeholder="Name"/>
-                <input {...register("description")} placeholder="Description"/>
-                <input type="number" {...register("price")} placeholder="Price"/>
-                <input type="number" {...register("inventory")} placeholder="Inventory"/>
-                <input {...register("shipmentDeliveryTimes")} placeholder="Shipment Delivery Times"/>
-                <input type="checkbox" {...register("enabled")} placeholder="Enabled"/>
-                <CategoryInput {...register("categoryId")} />
-                <input type="file" {...register("image")} placeholder="Description" />
-                <input type="submit"/>
-            </form>
+            <Container className="py-5">
+                <nav>
+                    <Link to="/admin">Back</Link>
+                </nav>
+                <Form onSubmit={handleSubmit(onSubmit)}>
+                    <Row className="g-3">
+                        <FormGroup className="col-sm-6" controlId="sku">
+                            <Form.Label>Sku</Form.Label>
+                            <FormControl {...register("sku")} placeholder="Sku"/>
+                        </FormGroup>
+                        <FormGroup className="col-sm-6" controlId="name">
+                            <Form.Label>Name</Form.Label>
+                            <FormControl {...register("name")} placeholder="Name"/>
+                        </FormGroup>
+                        <FormGroup className="col-sm-12" controlId="description">
+                            <Form.Label>Description</Form.Label>
+                            <FormControl as="textarea" {...register("description")} placeholder="Description"/>
+                        </FormGroup>
+                        <FormGroup className="col-sm-4" controlId="price">
+                            <Form.Label>Price</Form.Label>
+                            <FormControl type="number" {...register("price")} placeholder="Price"/>
+                        </FormGroup>
+                        <FormGroup className="col-sm-4" controlId="inventory">
+                            <Form.Label>Inventory</Form.Label>
+                            <FormControl type="number" {...register("inventory")} placeholder="Inventory"/>
+                        </FormGroup>
+                        <FormGroup className="col-sm-4" controlId="shipmentDeliveryTimes">
+                            <Form.Label>Shipment Delivery Times</Form.Label>
+                            <FormControl {...register("shipmentDeliveryTimes")} placeholder="Shipment Delivery Times"/>
+                        </FormGroup>
+                        <FormGroup className="col-sm-4" controlId="enabled">
+                            <Form.Label>Enabled</Form.Label>
+                            <FormCheck type="checkbox" {...register("enabled")} placeholder="Enabled"/>
+                        </FormGroup>
+                        <FormGroup className="col-sm-4" controlId="categoryId">
+                            <Form.Label>Category</Form.Label>
+                            <CategoryInput {...register("categoryId")} />
+                        </FormGroup>
+                        <FormGroup className="col-sm-4" controlId="image">
+                            <Form.Label>Image</Form.Label>
+                            <FormControl type="file" {...register("image")} placeholder="Image"/>
+                        </FormGroup>
+                        <Button type="submit">Create</Button>
+                    </Row>
+                </Form>
+            </Container>
         </>
     );
 }

@@ -10,15 +10,13 @@ export default function Cart({clearCart}) {
     const user = useContext(UserContext);
 
     const handleClick = async () => {
-        console.log(cart)
         const newCart = cart.map(data => data.sku);
         try {
-            const response = await axios.post('http://localhost:8080/product/purchase/', newCart, {
+            await axios.post('http://localhost:8080/product/purchase/', newCart, {
                 headers: {
                     Authorization: `bearer ${user.access_token}`
                 }
             });
-            console.log(response);
             clearCart();
         } catch (err) {
             console.log(err)

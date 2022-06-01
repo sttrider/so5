@@ -4,40 +4,39 @@ import {useEffect, useState, useCallback} from "react";
 import axios from "axios";
 import CategoryInput from "../../../components/category/CategoryInput";
 import ProductList from "../../../components/product/ProductList";
+import {Col, Container, Row} from "react-bootstrap";
 
 function List() {
 
     const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [category, setCategory] = useState(1);
 
     useEffect(() => {
         const getData = async () => {
-            try {
-                const response = await axios.post('http://localhost:8080/product/search', {categoryId: category})
-                setProducts(response.data);
-            } finally {
-                setLoading(false)
-            }
+            const response = await axios.post('http://localhost:8080/product/search', {categoryId: category})
+            setProducts(response.data);
         }
         getData();
     }, [category]);
 
     const handleOnChange = useCallback((data) => setCategory(data.target.value), []);
 
-    console.log("bbb")
     return (
         <>
-            <main>
-                <h2>Products list</h2>
-            </main>
-            <nav>
+            <Container as="section" className="py-5">
                 <Link to="create">Create</Link>
                 <Link to="/">Logout</Link>
-            </nav>
-            {loading && <div>A moment please...</div>}
-            <CategoryInput onChange={handleOnChange} />
-            <ProductList products={products}/>
+            </Container>
+            <div className="py-5 bg-light">
+                <Container>
+                    <Row>
+                        <Col>
+                            <CategoryInput onChange={handleOnChange}/>
+                            <ProductList products={products}/>
+                        </Col>
+                    </Row>
+                </Container>
+            </div>
         </>
     );
 }
