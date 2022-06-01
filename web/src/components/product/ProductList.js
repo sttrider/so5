@@ -1,7 +1,13 @@
 import * as React from "react";
 import {Button, Card, CardImg, Col, Row} from "react-bootstrap";
+import {useNavigate} from "react-router-dom";
 
-export default function ProductList({products, addCart}) {
+export default function ProductList({products, addCart, changeStateProduct, deleteProduct}) {
+    const navigate = useNavigate();
+
+    const handleEdit = ({sku}) => {
+        navigate(`/admin/${sku}`, {replace: true});
+    }
 
     return (
         <Row sm="2" md="3" className="g-3 py-3">
@@ -15,9 +21,10 @@ export default function ProductList({products, addCart}) {
                                 <Card.Text>{product.description}</Card.Text>
                                 <div className="d-flex justify-content-between align-items-center">
                                     <div className="btn-group">
-                                        {!addCart && <>
-                                            <Button variant="outline-secondary" size="sm">Edit</Button>
-                                            <Button variant="outline-danger" size="sm">Delete</Button>
+                                        {changeStateProduct && <>
+                                            <Button variant="outline-secondary" size="sm" onClick={() => handleEdit(product)}>Edit</Button>
+                                            <Button variant={`outline-${product.enabled ? 'danger' : 'success'}`} size="sm" onClick={() => changeStateProduct(product)}>{product.enabled ? 'Inactivate' : 'Activate'}</Button>
+                                            <Button variant="danger" size="sm" onClick={() => deleteProduct(product)}>Delete</Button>
                                         </>
                                         }
                                         {addCart &&

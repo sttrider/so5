@@ -31,6 +31,7 @@ function App() {
                     <Route path="/admin" element={<Admin/>}>
                         <Route index element={<List/>}/>
                         <Route path="create" element={<Create/>}/>
+                        <Route path=":sku" element={<Create/>}/>
                     </Route>
                 </Routes>
             </>

@@ -1,19 +1,39 @@
 import * as React from "react";
-import {Link, useNavigate} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {useForm} from "react-hook-form";
 import axios from "axios";
 import CategoryInput from "../../../components/category/CategoryInput";
 import login from "../../../service/loginService";
 import {Button, Col, Container, Form, FormCheck, FormControl, FormGroup, Row} from "react-bootstrap";
+import {useEffect} from "react";
 
 function Create() {
 
     const navigate = useNavigate();
-    const {register, handleSubmit} = useForm({
+    const {register, handleSubmit, setValue} = useForm({
         defaultValues: {
-            enabled: true
+            enabled: true,
+            categoryId: 1
         }
     });
+    const {sku} = useParams();
+
+    useEffect(() => {
+
+        const getData = async () => {
+            const {data} = await axios.get(`http://localhost:8080/product/${sku}`)
+            for (let i in data) {
+                if (data.hasOwnProperty(i)) {
+                    setValue(i, data[i]);
+                }
+            }
+            setValue("categoryId", data.category.id);
+            register("categoryId").ref.forceUpdate();
+        }
+        if (sku) {
+            getData();
+        }
+    }, [sku]);
 
     const onSubmit = async (data) => {
         const newData = {...data};
@@ -24,11 +44,19 @@ function Create() {
         }
         const user = await login({username: "admin@so5.com", password: "admin"});
         try {
-            await axios.post('http://localhost:8080/product/', newData, {
-                headers: {
-                    Authorization: `bearer ${user.access_token}`
-                }
-            })
+            if (newData.id === null) {
+                await axios.post('http://localhost:8080/product/', newData, {
+                    headers: {
+                        Authorization: `bearer ${user.access_token}`
+                    }
+                });
+            } else {
+                await axios.put(`http://localhost:8080/product/${newData.id}`, newData, {
+                    headers: {
+                        Authorization: `bearer ${user.access_token}`
+                    }
+                });
+            }
             navigate("/admin", {replace: true});
         } catch (err) {
             console.log(err);
@@ -97,7 +125,7 @@ function Create() {
                                 <FormControl type="file" {...register("image")} placeholder="Image"/>
                             </FormGroup>
                             <Col>
-                                <Button type="submit">Create</Button>
+                                <Button type="submit">Save</Button>
                             </Col>
                         </Row>
                     </Form>

@@ -5,21 +5,52 @@ import axios from "axios";
 import CategoryInput from "../../../components/category/CategoryInput";
 import ProductList from "../../../components/product/ProductList";
 import {Col, Container, Row} from "react-bootstrap";
+import login from "../../../service/loginService";
 
 function List() {
 
     const [products, setProducts] = useState([]);
     const [category, setCategory] = useState(1);
+    const [admin, setAdmin] = useState({});
 
     useEffect(() => {
         const getData = async () => {
-            const response = await axios.post('http://localhost:8080/product/search', {categoryId: category})
-            setProducts(response.data);
+            const userAdmin = await login({username: "admin@so5.com", password: "admin"});
+            setAdmin(userAdmin);
+
+            await getProducts(userAdmin);
         }
         getData();
     }, [category]);
 
+    const getProducts = async (userAdmin) => {
+        const response = await axios.post('http://localhost:8080/product/list', {categoryId: category}, {
+            headers: {
+                Authorization: `bearer ${userAdmin.access_token}`
+            }
+        })
+        setProducts(response.data);
+    }
+
     const handleOnChange = useCallback((data) => setCategory(data.target.value), []);
+
+    const handleChangeState = async ({sku, enabled}) => {
+        await axios.put(`http://localhost:8080/product/${sku}/${!enabled}`, {}, {
+            headers: {
+                Authorization: `bearer ${admin.access_token}`
+            }
+        })
+        await getProducts(admin);
+    }
+
+    const handleDeleteProduct = async ({id}) => {
+        await axios.delete(`http://localhost:8080/product/${id}`, {
+            headers: {
+                Authorization: `bearer ${admin.access_token}`
+            }
+        })
+        await getProducts(admin);
+    }
 
     return (
         <>
@@ -32,7 +63,8 @@ function List() {
                     <Row>
                         <Col>
                             <CategoryInput onChange={handleOnChange}/>
-                            <ProductList products={products}/>
+                            <ProductList products={products} changeStateProduct={handleChangeState}
+                                         deleteProduct={handleDeleteProduct}/>
                         </Col>
                     </Row>
                 </Container>

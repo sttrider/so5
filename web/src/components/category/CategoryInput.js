@@ -15,7 +15,6 @@ const CategoryInput = ({onChange, onBlur, name}, ref) => {
         getCategory();
     }, []);
 
-
     return (<FormSelect name={name} ref={ref} onChange={onChange} onBlur={onBlur}>
         <option>Choose one</option>
         {category && category.map(({id, name}) => (
