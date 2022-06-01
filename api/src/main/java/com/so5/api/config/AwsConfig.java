@@ -1,12 +1,16 @@
 package com.so5.api.config;
 
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.so5.api.config.properties.AwsProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @Configuration
 @RequiredArgsConstructor
@@ -15,12 +19,19 @@ public class AwsConfig {
     private final AwsProperties awsProperties;
 
     @Bean
-    public AmazonS3 amazonS3() {
-        var client = AmazonS3ClientBuilder.standard()
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(awsProperties.getServer().getHost(), awsProperties.getServer().getRegion())).build();
-        if (!client.doesBucketExistV2(awsProperties.getBucket())) {
-            client.createBucket(awsProperties.getBucket());
-        }
-        return client;
+    public S3Client s3Client() throws URISyntaxException {
+        var s3 = S3Client.builder().endpointOverride(new URI(awsProperties.getServer().getHost())).region(Region.US_EAST_1).credentialsProvider(() -> new AwsCredentials() {
+            @Override
+            public String accessKeyId() {
+                return "123";
+            }
+
+            @Override
+            public String secretAccessKey() {
+                return "xyz";
+            }
+        }).build();
+        s3.createBucket(CreateBucketRequest.builder().bucket(awsProperties.getBucket()).build());
+        return s3;
     }
 }

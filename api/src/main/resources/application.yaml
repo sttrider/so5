@@ -12,10 +12,30 @@ spring:
 
 aws:
   server:
-    host: http://s3.localhost.localstack.cloud:4566
+    host: http://localhost:4566
     region: us-east-1
   bucket: so5
 
 imagemagick:
   path: /usr/local/Cellar/imagemagick/7.1.0-33/bin
   resize: 300
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:mysql://db:3306/so5?createDatabaseIfNotExist=true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://keycloak:8080/realms/so5/protocol/openid-connect/certs
+
+aws:
+  server:
+    host: http://localstack:4566
+
+imagemagick:
+  path: /usr/bin

@@ -1,14 +1,13 @@
 package com.so5.api.service;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.so5.api.config.properties.AwsProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 
 @Service
 @RequiredArgsConstructor
@@ -16,18 +15,20 @@ public class S3Service {
 
     private final AwsProperties awsProperties;
 
-    private final AmazonS3 amazonS3;
+    private final S3Client s3Client;
 
     public String upload(ByteArrayOutputStream os, String sku, String contentType) {
 
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(os.toByteArray().length);
-        metadata.setContentType(contentType);
+        var bytes = os.toByteArray();
+        PutObjectRequest objectRequest = PutObjectRequest.builder()
+                .bucket(awsProperties.getBucket())
+                .key(sku)
+                .contentType(contentType)
+                .contentLength((long) bytes.length)
+                .build();
 
-        InputStream is = new ByteArrayInputStream(os.toByteArray());
+        s3Client.putObject(objectRequest, RequestBody.fromBytes(bytes));
 
-        amazonS3.putObject(awsProperties.getBucket(), sku, is, metadata);
-
-        return awsProperties.getServer().getHost() + "/" + awsProperties.getBucket() + "/" + sku;
+        return "http://localhost:4566/" + awsProperties.getBucket() + "/" + sku;
     }
 }
