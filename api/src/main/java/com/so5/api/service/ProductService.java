@@ -6,7 +6,7 @@ import com.so5.api.entity.ProductCategory;
 import com.so5.api.exception.EntityNotFoundException;
 import com.so5.api.exception.NoCreditCardDataException;
 import com.so5.api.repository.ProductRepository;
-import com.so5.api.vo.ProductCreateVO;
+import com.so5.api.vo.ProductSaveVO;
 import com.so5.api.vo.SearchProductVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.Set;
@@ -33,24 +32,35 @@ public class ProductService {
     private final ImageResizeService imageResizeService;
     private final S3Service s3Service;
 
-    public Product create(ProductCreateVO productCreateVO) {
+    public Product save(ProductSaveVO productSaveVO) {
 
-        var image = uploadImage(productCreateVO);
+        return save(productSaveVO, null);
+    }
 
-        var product = Product.builder()
-                .sku(productCreateVO.getSku())
-                .name(productCreateVO.getName())
-                .description(productCreateVO.getDescription())
-                .price(productCreateVO.getPrice())
-                .inventory(productCreateVO.getInventory())
-                .shipmentDeliveryTimes(productCreateVO.getShipmentDeliveryTimes())
-                .enabled(productCreateVO.isEnabled())
-                .image(image)
-                .category(ProductCategory.builder()
-                        .id(productCreateVO.getCategoryId())
-                        .build())
-                .creationDate(LocalDateTime.now())
-                .build();
+    public Product save(ProductSaveVO productSaveVO, Long id) {
+
+        Product product;
+        if (id != null) {
+            product = productRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        } else {
+            product = new Product();
+        }
+
+        var image = uploadImage(productSaveVO);
+
+        product.setSku(productSaveVO.getSku());
+        product.setName(productSaveVO.getName());
+        product.setDescription(productSaveVO.getDescription());
+        product.setPrice(productSaveVO.getPrice());
+        product.setInventory(productSaveVO.getInventory());
+        product.setShipmentDeliveryTimes(productSaveVO.getShipmentDeliveryTimes());
+        product.setEnabled(productSaveVO.isEnabled());
+        if (image != null) {
+            product.setImage(image);
+        }
+        product.setCategory(ProductCategory.builder()
+                .id(productSaveVO.getCategoryId())
+                .build());
 
         return productRepository.save(product);
     }
@@ -62,7 +72,16 @@ public class ProductService {
 
     public List<Product> search(SearchProductVO searchProductVO) {
 
-        return productRepository.findByCategory(ProductCategory.builder().id(searchProductVO.getCategoryId()).build(), PageRequest.of(0, 20));
+        return productRepository.findByCategoryAndEnabled(ProductCategory.builder()
+                .id(searchProductVO.getCategoryId())
+                .build(), true, PageRequest.of(0, 20));
+    }
+
+    public List<Product> list(SearchProductVO searchProductVO) {
+
+        return productRepository.findByCategory(ProductCategory.builder()
+                .id(searchProductVO.getCategoryId())
+                .build(), PageRequest.of(0, 20));
     }
 
     public void purchase(Set<String> purchaseVO, Customer customer) {
@@ -71,11 +90,27 @@ public class ProductService {
         creditCardDataService.findByCustomer(customer).orElseThrow(NoCreditCardDataException::new);
     }
 
-    private String uploadImage(ProductCreateVO productCreateVO) {
-        if (productCreateVO.getImage() == null) {
+    public void changeStatus(String sku, boolean enabled) {
+        productRepository.updateStatusBySku(enabled, sku);
+    }
+
+    public void delete(Long id) {
+
+        var optionalProduct = productRepository.findById(id);
+
+        optionalProduct.ifPresent((product -> {
+
+            s3Service.delete(product.getSku());
+            productRepository.deleteById(product.getId());
+        }));
+
+    }
+
+    private String uploadImage(ProductSaveVO productSaveVO) {
+        if (productSaveVO.getImage() == null) {
             return null;
         }
-        var base62Splitted = productCreateVO.getImage().split(",");
+        var base62Splitted = productSaveVO.getImage().split(",");
         var image = Base64.getDecoder().decode(base62Splitted[1]);
         InputStream fis = new ByteArrayInputStream(image);
 
@@ -84,7 +119,7 @@ public class ProductService {
 
         try {
             ByteArrayOutputStream os = imageResizeService.resizeImage(fis, extension);
-            return s3Service.upload(os, productCreateVO.getSku(), contentType);
+            return s3Service.upload(os, productSaveVO.getSku(), contentType);
         } catch (IOException e) {
             log.error("Error resizing image.", e);
             return null;

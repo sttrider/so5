@@ -3,7 +3,7 @@ package com.so5.api.vo;
 import lombok.Data;
 
 @Data
-public class ProductCreateVO {
+public class ProductSaveVO {
 
     private String sku;
     private String name;

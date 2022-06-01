@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.ByteArrayOutputStream;
@@ -30,5 +31,15 @@ public class S3Service {
         s3Client.putObject(objectRequest, RequestBody.fromBytes(bytes));
 
         return "http://localhost:4566/" + awsProperties.getBucket() + "/" + sku;
+    }
+
+    public void delete(String sku) {
+
+        var deleteObjectResponse = DeleteObjectRequest.builder()
+                .bucket(awsProperties.getBucket())
+                .key(sku)
+                .build();
+
+        s3Client.deleteObject(deleteObjectResponse);
     }
 }

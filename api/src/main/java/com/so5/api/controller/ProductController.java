@@ -3,10 +3,11 @@ package com.so5.api.controller;
 import com.so5.api.entity.Product;
 import com.so5.api.service.CustomerService;
 import com.so5.api.service.ProductService;
-import com.so5.api.vo.ProductCreateVO;
+import com.so5.api.vo.ProductSaveVO;
 import com.so5.api.vo.SearchProductVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -27,13 +28,43 @@ public class ProductController {
 
     @PostMapping("/")
     @Secured({"ROLE_admin"})
-    public ResponseEntity<Void> create(@RequestBody ProductCreateVO productCreateVO, UriComponentsBuilder uriComponentsBuilder) {
+    public ResponseEntity<Void> create(@RequestBody ProductSaveVO productSaveVO, UriComponentsBuilder uriComponentsBuilder) {
 
-        var product = productService.create(productCreateVO);
+        var product = productService.save(productSaveVO);
 
         var uriComponents =
                 uriComponentsBuilder.path("/product/{id}").buildAndExpand(product.getSku());
         return ResponseEntity.created(uriComponents.toUri()).build();
+    }
+
+    @PostMapping("/list")
+    @Secured({"ROLE_admin"})
+    public List<Product> list(@RequestBody SearchProductVO searchProductVO) {
+
+        return productService.list(searchProductVO);
+    }
+
+    @PutMapping("/{sku}/{enabled}")
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ROLE_admin"})
+    public void changeStatus(@PathVariable String sku, @PathVariable boolean enabled) {
+        productService.changeStatus(sku, enabled);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ROLE_admin"})
+    public void update(@RequestBody ProductSaveVO productSaveVO, @PathVariable Long id) {
+
+        productService.save(productSaveVO, id);
+
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ROLE_admin"})
+    public void changeStatus(@PathVariable Long id) {
+        productService.delete(id);
     }
 
     @GetMapping("/{sku}")
