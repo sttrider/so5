@@ -2,9 +2,9 @@ import * as React from "react";
 import {useContext} from "react";
 import {CartContext, UserContext} from "../../screens/home/Home";
 import axios from "axios";
-import ProductList from "../product/ProductList";
+import {Button} from "react-bootstrap";
 
-export default function Cart({clearCart}) {
+export default function Cart({clearCart, removeFromCart}) {
 
     const cart = useContext(CartContext);
     const user = useContext(UserContext);
@@ -23,16 +23,45 @@ export default function Cart({clearCart}) {
         }
     }
 
+    const handleRemove = (product) => {
+        removeFromCart(product);
+    }
+
+    let total = cart.reduce((sum, product) => sum + product.price, 0);
+
     return (
         <>
-            {cart.length > 0 && (
-                <>
-                    <p>Cart</p>
-                    <div>
-                        {user && <button onClick={handleClick}>1-Click buy</button>}
+            <h4 className="d-flex justify-content-between align-items-center mb-3">
+                <span className="text-primary">Your cart</span>
+                <span className="badge bg-primary rounded-pill">{cart.length}</span>
+            </h4>
+            <ul className="list-group mb-3">
+                {cart.length > 0 && cart.map((product) => (
+                    <li key={product.sku} className="list-group-item d-flex justify-content-between lh-sm">
+                        <div>
+                            <h6 className="my-0">{product.name}</h6>
+                            <small className="text-muted">{product.description}</small>
+                        </div>
+                        <div className="text-right">
+                            <p className="my-0 text-muted">${product.price}</p>
+                            <small className="text-muted">
+                                <Button variant="link" className="btn-ultra-sm"
+                                        onClick={() => handleRemove(product)}>Remove</Button>
+                            </small>
+                        </div>
+                    </li>
+                ))}
+                <li className="list-group-item d-flex justify-content-between">
+                    <span>Total (USD)</span>
+                    <strong>${total}</strong>
+                </li>
+            </ul>
+            {user &&
+                <form className="card p-2">
+                    <div className="input-group">
+                        <Button variant="primary" className="btn-block" onClick={handleClick}>1-Click buy</Button>
                     </div>
-                    <ProductList products={cart}/>
-                </>
-            )}
+                </form>
+            }
         </>);
 }

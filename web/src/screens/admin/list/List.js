@@ -23,9 +23,9 @@ function List() {
 
     return (
         <>
-            <Container as="section" className="py-5">
-                <Link to="create">Create</Link>
-                <Link to="/">Logout</Link>
+            <Container as="section" className="py-3">
+                <Link to="create" className="btn btn-outline-primary me-1">Create</Link>
+                <Link to="/" className="btn btn-outline-secondary">Logout</Link>
             </Container>
             <div className="py-5 bg-light">
                 <Container>

@@ -3,7 +3,7 @@ import {useContext} from "react";
 import {useForm} from "react-hook-form";
 import {UserContext} from "../../screens/home/Home";
 import login from "../../service/loginService";
-import {Col, Form, FormControl, FormGroup, Row} from "react-bootstrap";
+import {Button, Col, Form, FormControl, FormGroup, Row} from "react-bootstrap";
 
 export default function Login({setUser}) {
 
@@ -43,6 +43,6 @@ export default function Login({setUser}) {
     }
 
     return (
-        <button onClick={onLogout}>Logout</button>
+        <Button variant="outline-secondary" onClick={onLogout}>Logout</Button>
     );
 }

@@ -31,30 +31,44 @@ const Home = React.memo(() => {
     }, [category]);
 
     const addCart = (product) => {
-        cart.push(product);
-        setCart([...new Set(cart)]);
+        const found = cart.filter((p) => p.sku === product.sku);
+        if (found.length === 0) {
+            cart.push(product);
+            setCart([...new Set(cart)]);
+        }
     }
 
     const clearCart = () => {
         setCart([]);
     }
 
+    const removeFromCart = (product) => {
+        const newCart = cart.filter((p) => p.sku !== product.sku);
+        setCart([...new Set(newCart)]);
+    }
+
     const handleOnChange = useCallback((data) => setCategory(data.target.value), []);
     return (
         <CartContext.Provider value={cart}>
             <UserContext.Provider value={user}>
-                <Container as="section" className="py-5">
+                <Container as="section" className="py-3">
                     <Login setUser={setUser}/>
                 </Container>
                 <div className="py-5 bg-light">
                     <Container>
-                        <Row>
-                            <Col>
-                                <CategoryInput onChange={handleOnChange}/>
+                        <Row className="g-5">
+                            <Col md="5" lg="4" className="order-md-last">
+                                <Cart clearCart={clearCart} removeFromCart={removeFromCart}/>
+                            </Col>
+                            <Col md="7" lg="8">
+                                <Row>
+                                    <Col>
+                                        <CategoryInput onChange={handleOnChange}/>
+                                    </Col>
+                                </Row>
+                                <ProductList products={products} addCart={addCart}/>
                             </Col>
                         </Row>
-                        <ProductList products={products} addCart={addCart}/>
-                        <Cart clearCart={clearCart}/>
                     </Container>
                 </div>
             </UserContext.Provider>

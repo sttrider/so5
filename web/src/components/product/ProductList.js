@@ -15,13 +15,20 @@ export default function ProductList({products, addCart}) {
                                 <Card.Text>{product.description}</Card.Text>
                                 <div className="d-flex justify-content-between align-items-center">
                                     <div className="btn-group">
+                                        {!addCart && <>
+                                            <Button variant="outline-secondary" size="sm">Edit</Button>
+                                            <Button variant="outline-danger" size="sm">Delete</Button>
+                                        </>
+                                        }
                                         {addCart &&
-                                            <Button variant="outline-primary" onClick={() => addCart(product)}>Add to cart</Button>}
+                                            <Button variant="outline-primary" onClick={() => addCart(product)}>Add to
+                                                cart</Button>}
                                     </div>
-                                    <small className="text-muted">Price: {product.price}</small>
+                                    <small className="text-muted">Price: ${product.price}</small>
                                 </div>
                             </Card.Body>
-                            <Card.Footer className="text-muted">Estimated delivery: {product.shipmentDeliveryTimes}</Card.Footer>
+                            <Card.Footer className="text-muted">Estimated
+                                delivery: {product.shipmentDeliveryTimes}</Card.Footer>
                         </Card>
                     </Col>
                 ))}
