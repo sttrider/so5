@@ -1,10 +1,12 @@
 import * as React from "react";
-import {useContext} from "react";
+import {useContext, useState} from "react";
 import {CartContext, UserContext} from "../../screens/home/Home";
 import axios from "axios";
-import {Button} from "react-bootstrap";
+import {Alert, Button} from "react-bootstrap";
 
 export default function Cart({clearCart, removeFromCart}) {
+
+    const [error, setError] = useState(null);
 
     const cart = useContext(CartContext);
     const user = useContext(UserContext);
@@ -17,9 +19,12 @@ export default function Cart({clearCart, removeFromCart}) {
                     Authorization: `bearer ${user.access_token}`
                 }
             });
+            setError(null);
             clearCart();
         } catch (err) {
-            console.log(err)
+            console.log(err);
+            setError("You can't do the one click buy.");
+            setTimeout(() => setError(null),  30000);
         }
     }
 
@@ -63,5 +68,6 @@ export default function Cart({clearCart, removeFromCart}) {
                     </div>
                 </form>
             }
+            {error && <Alert variant="danger" className="mt-2">{error}</Alert>}
         </>);
 }
