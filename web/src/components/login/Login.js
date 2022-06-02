@@ -14,7 +14,6 @@ export default function Login({setUser}) {
     const onSubmit = async (data) => {
         const response = await login(data)
         setUser(response);
-
     }
 
     const onLogout = () => {
@@ -35,7 +34,7 @@ export default function Login({setUser}) {
                         <Form.Label>Password</Form.Label>
                     </FormGroup>
                     <p>
-                        <input type="submit" className="w-100 btn btn-lg btn-primary" value="Sign in"/>
+                        <input type="submit" className="w-100 btn btn-lg btn-primary" value="Sign in" data-testid="submitLogin"/>
                     </p>
                 </Form>
             </Col>

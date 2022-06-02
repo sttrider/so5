@@ -16,7 +16,7 @@ function App() {
                 <Navbar variant="dark" bg="dark" className="shadow-sm">
                     <Container>
                         <NavbarBrand href="/"><strong>SO5</strong></NavbarBrand>
-                        <NavbarToggle aria-controls="header-navbar-nav" />
+                        <NavbarToggle aria-controls="header-navbar-nav"/>
                         <NavbarCollapse id="header-navbar-nav">
                             <Nav className="me-auto">
                                 <NavLink href="/admin">Admin</NavLink>
@@ -25,16 +25,14 @@ function App() {
                     </Container>
                 </Navbar>
             </header>
-            <>
-                <Routes>
-                    <Route path="/" element={<Home/>}/>
-                    <Route path="/admin" element={<Admin/>}>
-                        <Route index element={<List/>}/>
-                        <Route path="create" element={<Create/>}/>
-                        <Route path=":sku" element={<Create/>}/>
-                    </Route>
-                </Routes>
-            </>
+            <Routes>
+                <Route path="/" element={<Home/>}/>
+                <Route path="/admin" element={<Admin/>}>
+                    <Route index element={<List/>}/>
+                    <Route path="create" element={<Create/>}/>
+                    <Route path=":sku" element={<Create/>}/>
+                </Route>
+            </Routes>
         </>
     );
 }

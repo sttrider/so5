@@ -38,7 +38,7 @@ export default function Cart({clearCart, removeFromCart}) {
         <>
             <h4 className="d-flex justify-content-between align-items-center mb-3">
                 <span className="text-primary">Your cart</span>
-                <span className="badge bg-primary rounded-pill">{cart.length}</span>
+                <span className="badge bg-primary rounded-pill" data-testid="badge">{cart.length}</span>
             </h4>
             <ul className="list-group mb-3">
                 {cart.length > 0 && cart.map((product) => (
@@ -50,7 +50,7 @@ export default function Cart({clearCart, removeFromCart}) {
                         <div className="text-right">
                             <p className="my-0 text-muted">${product.price}</p>
                             <small className="text-muted">
-                                <Button variant="link" className="btn-ultra-sm"
+                                <Button variant="link" className="btn-ultra-sm" data-testid="removeFromCart"
                                         onClick={() => handleRemove(product)}>Remove</Button>
                             </small>
                         </div>
@@ -58,16 +58,16 @@ export default function Cart({clearCart, removeFromCart}) {
                 ))}
                 <li className="list-group-item d-flex justify-content-between">
                     <span>Total (USD)</span>
-                    <strong>${total}</strong>
+                    <strong data-testid="cartTotal">${total}</strong>
                 </li>
             </ul>
             {user &&
                 <form className="card p-2">
                     <div className="input-group">
-                        <Button variant="primary" className="btn-block" onClick={handleClick}>1-Click buy</Button>
+                        <Button variant="primary" className="btn-block" onClick={handleClick} data-testid="oneClickBuy">1-Click buy</Button>
                     </div>
                 </form>
             }
-            {error && <Alert variant="danger" className="mt-2">{error}</Alert>}
+            {error && <Alert variant="danger" className="mt-2" data-testid="onClickBuyError">{error}</Alert>}
         </>);
 }

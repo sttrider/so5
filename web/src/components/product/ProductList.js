@@ -24,11 +24,11 @@ export default function ProductList({products, addCart, changeStateProduct, dele
                                         {changeStateProduct && <>
                                             <Button variant="outline-secondary" size="sm" onClick={() => handleEdit(product)}>Edit</Button>
                                             <Button variant={`outline-${product.enabled ? 'danger' : 'success'}`} size="sm" onClick={() => changeStateProduct(product)}>{product.enabled ? 'Inactivate' : 'Activate'}</Button>
-                                            <Button variant="danger" size="sm" onClick={() => deleteProduct(product)}>Delete</Button>
+                                            <Button variant="danger" size="sm" data-testid="removeFromCart" onClick={() => deleteProduct(product)}>Delete</Button>
                                         </>
                                         }
                                         {addCart &&
-                                            <Button variant="outline-primary" onClick={() => addCart(product)}>Add to
+                                            <Button variant="outline-primary" data-testid="addToCart" onClick={() => addCart(product)}>Add to
                                                 cart</Button>}
                                     </div>
                                     <small className="text-muted">Price: ${product.price}</small>

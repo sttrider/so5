@@ -12,20 +12,14 @@ const UserContext = createContext();
 
 const Home = React.memo(() => {
     const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [category, setCategory] = useState(1);
     const [cart, setCart] = useState([]);
     const [user, setUser] = useState(null);
 
     useEffect(() => {
         const getData = async () => {
-            try {
-                const response = await axios.post('http://localhost:8080/product/search', {categoryId: category})
-                setProducts(response.data);
-                console.log(response.data)
-            } finally {
-                setLoading(false)
-            }
+            const response = await axios.post('http://localhost:8080/product/search', {categoryId: category})
+            setProducts(response.data);
         }
         getData();
     }, [category]);
