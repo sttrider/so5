@@ -44,7 +44,7 @@ function Create() {
         }
         const user = await login({username: "admin@so5.com", password: "admin"});
         try {
-            if (newData.id === null) {
+            if (newData.id == null) {
                 await axios.post('http://localhost:8080/product/', newData, {
                     headers: {
                         Authorization: `bearer ${user.access_token}`
