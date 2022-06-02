@@ -5,6 +5,7 @@ import com.so5.api.entity.Product;
 import com.so5.api.entity.ProductCategory;
 import com.so5.api.exception.EntityNotFoundException;
 import com.so5.api.exception.NoCreditCardDataException;
+import com.so5.api.exception.ResizeImageException;
 import com.so5.api.repository.ProductRepository;
 import com.so5.api.vo.ProductSaveVO;
 import com.so5.api.vo.SearchProductVO;
@@ -16,8 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +45,7 @@ public class ProductService {
             product = productRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         } else {
             product = new Product();
+            product.setCreationDate(LocalDateTime.now());
         }
 
         var image = uploadImage(productSaveVO);
@@ -120,7 +122,7 @@ public class ProductService {
         try {
             ByteArrayOutputStream os = imageResizeService.resizeImage(fis, extension);
             return s3Service.upload(os, productSaveVO.getSku(), contentType);
-        } catch (IOException e) {
+        } catch (ResizeImageException e) {
             log.error("Error resizing image.", e);
             return null;
         }

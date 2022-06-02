@@ -1,6 +1,7 @@
 package com.so5.api.service;
 
 import com.so5.api.config.properties.ImageMagickProperties;
+import com.so5.api.exception.ResizeImageException;
 import lombok.RequiredArgsConstructor;
 import org.im4java.core.ConvertCmd;
 import org.im4java.core.IM4JavaException;
@@ -20,7 +21,7 @@ public class ImageResizeService {
 
     private final ImageMagickProperties imageMagickProperties;
 
-    public ByteArrayOutputStream resizeImage(InputStream fis, String extension) throws IOException {
+    public ByteArrayOutputStream resizeImage(InputStream fis, String extension) throws ResizeImageException {
 
         IMOperation op = new IMOperation();
         op.addImage();
@@ -40,7 +41,7 @@ public class ImageResizeService {
             ImageIO.write(s2b.getImage(), extension, os);
             return os;
         } catch (IOException | InterruptedException | IM4JavaException e) {
-            throw new RuntimeException(e);
+            throw new ResizeImageException("Error resizing image.", e);
         }
     }
 }
