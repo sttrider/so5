@@ -63,7 +63,7 @@ public class ProductController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"ROLE_admin"})
-    public void changeStatus(@PathVariable Long id) {
+    public void delete(@PathVariable Long id) {
         productService.delete(id);
     }
 
@@ -80,6 +80,7 @@ public class ProductController {
     }
 
     @PostMapping("/purchase")
+    @ResponseStatus(HttpStatus.OK)
     @Secured({"ROLE_customer"})
     public void purchase(@RequestBody Set<String> purchaseVO, JwtAuthenticationToken principal) {
         log.info("Purchase {}", purchaseVO);

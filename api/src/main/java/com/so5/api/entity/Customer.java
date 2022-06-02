@@ -1,7 +1,6 @@
 package com.so5.api.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -9,6 +8,9 @@ import javax.persistence.*;
 @Table(name = "customer")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Customer {
 
     @Id

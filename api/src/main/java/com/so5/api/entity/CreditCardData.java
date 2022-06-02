@@ -1,7 +1,6 @@
 package com.so5.api.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -11,6 +10,9 @@ import java.time.LocalDateTime;
 @Table(name = "credit_card_data")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreditCardData {
 
     @Id
