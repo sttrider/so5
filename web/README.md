@@ -15,3 +15,17 @@ You must use docker-compose to compile, package, and run the application. You ne
 ```bash
 docker-compose up
 ```
+
+To test it you need to execute following commands:
+
+Linux/Mac environment
+```bash
+npm install
+CI=true npm test
+```
+
+Windows
+```bash
+npm install
+set CI=true&&npm test
+```
