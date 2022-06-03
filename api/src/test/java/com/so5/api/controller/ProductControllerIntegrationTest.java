@@ -19,8 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -230,8 +228,7 @@ public class ProductControllerIntegrationTest extends AbstractIntegrationTest {
     @Test
     @WithMockJwtAuth({"ROLE_admin"})
     public void whenCreateWithImage_thenShouldReturnCreatedAndCreateImage() throws Exception {
-        File file = new File(getClass().getClassLoader().getResource("test.jpg").getFile());
-        try (InputStream in = new FileInputStream(file)) {
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream("test.jpg")) {
             var bytes = in.readAllBytes();
             var imageBase64 = "data:image/jpg;base64," + Base64.getEncoder().encodeToString(bytes);
             var productSave = ProductSaveVO.builder()
