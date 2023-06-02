@@ -1,5 +1,5 @@
 # Saks OFF 5TH Java Challenge
-* João Vitor Moreira Oliveira - test
+* João Vitor Moreira Oliveira
 
 ## Table of Contents
 * [Requirements](#requirements)
